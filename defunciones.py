@@ -14,18 +14,8 @@ class DefuncionesHandler:
         self.path_entidad_municipio_localidad = self.path_catalogos + 'entidad_municipio_localidad.csv'
         self.entidad_municipio_localidad = pd.read_csv(self.path_entidad_municipio_localidad, header=0)
 
-        self.causa_auto = ['X600', 'X608', 'X609', 'X610', 'X618', 'X619', 'X620', 'X625', 'X630', 'X640',
-                           'X644', 'X648', 'X649', 'X650', 'X654', 'X660', 'X669', 'X670', 'X677', 'X679',
-                           'X680', 'X681', 'X683', 'X684', 'X685', 'X686', 'X687', 'X688', 'X689', 'X690',
-                           'X691', 'X694', 'X695', 'X696', 'X697', 'X698', 'X699', 'X700', 'X701', 'X702',
-                           'X703', 'X704', 'X705', 'X706', 'X707', 'X708', 'X709', 'X710', 'X711', 'X714',
-                           'X715', 'X717', 'X718', 'X719', 'X720', 'X724', 'X725', 'X727', 'X728', 'X730',
-                           'X737', 'X739', 'X740', 'X741', 'X742', 'X744', 'X745', 'X746', 'X747', 'X748',
-                           'X749', 'X760', 'X764', 'X765', 'X768', 'X769', 'X780', 'X781', 'X784', 'X785',
-                           'X787', 'X788', 'X789', 'X790', 'X800', 'X801', 'X802', 'X804', 'X805', 'X806',
-                           'X807', 'X808', 'X809', 'X814', 'X815', 'X817', 'X818', 'X824', 'X828', 'X829',
-                           'X830', 'X839', 'X840', 'X841', 'X842', 'X844', 'X845', 'X847', 'X848', 'X849']
-
+        self.df_decatcausa = pd.read_csv("./db/2018/catalogos/decatcausa.csv", header=0)
+        self.df_autoinflingidas = self.df_decatcausa.query("clave >= 'X600' and clave < 'X850'")
         if cached:
             #            self.path_defunciones = 'db/defunciones_2019/DEFUN_2019/Defunciones_2019.csv'
             self.path_defunciones = 'db/' + str(year) + '/defunciones/defunciones.csv'
@@ -39,7 +29,7 @@ class DefuncionesHandler:
 
     def filter_by_ent_and_causa_def(self, ent_regis):
         state = self.filter_by_ent(ent_regis)
-        ent_regis_fil = state[state.causa_def.isin(self.causa_auto)]
+        ent_regis_fil = state[state.causa_def.isin(self.df_autoinflingidas.clave)]
         return ent_regis_fil
 
     def filter_ent(self) -> pandas.DataFrame:
