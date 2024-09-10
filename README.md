@@ -7,6 +7,6 @@ For this project will be required to install
 >[!NOTE]
 >To install the frameworks it'll be useful to have the package manager called pip
 >
- $ pip install numpy
+ ` pip install numpy`
 
- $ pip install pandas
+` pip install pandas `
