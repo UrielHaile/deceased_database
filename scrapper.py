@@ -7,8 +7,10 @@ import requests
 class fetchingData():
     def __init__(self):
         self.url_main = "http://www.dgis.salud.gob.mx"
-        self.page_to = requests.get(
-            "http://www.dgis.salud.gob.mx/contenidos/basesdedatos/da_defunciones_gobmx.html")
+        try:
+            self.page_to = requests.get("http://www.dgis.salud.gob.mx/contenidos/basesdedatos/da_defunciones_gobmx.html",timeout=10)
+        except requests.exceptions.Timeout:
+            print("Timed out")
         self.soup = BeautifulSoup(self.page_to.text, 'html.parser')
         self.tables = self.soup.findAll("table")
         self.name = [h3.get_text().replace(' ', '_')
@@ -23,13 +25,21 @@ class fetchingData():
                 if not url.startswith('http'):
                     url = url[5:]
                     url = self.url_main+url
-                # TODO: Hacer el manejo de los evento como la desconexión o tiempo muy largo de espera.
-                archivo = requests.get(url, timeout=10)
-                name = url[url.rfind('/')+1:url.find('?'):1]
-                print(name)
-                with open(f'./{self.name[i]}/{name}.zip', 'wb') as f:
-                    f.write(archivo.content)
-                self.unzip(f'./{self.name[i]}/{name}.zip')
+                #TO DO: Hacer el manejo de los evento como la desconexión o tiempo muy largo de espera.
+                try:
+                    archivo = requests.get(url, timeout=10)
+                except requests.exceptions.Timeout:
+                    print('TimedOut')
+                if (archivo.status_code>=200 and archivo.status_code <=299):
+                    name = url[url.rfind('/')+1:url.find('?'):1]
+                    print(name)
+                    with open(f'./{self.name[i]}/{name}', 'wb') as f:
+                        f.write(archivo.content)
+                    self.unzip(f'./{self.name[i]}/{name}')
+                else:
+                    print(f"Código de error: {archivo.status_code} ")
+                    continue
+
 
     def createFolder(self, i):
         name_folder = self.name[i]
